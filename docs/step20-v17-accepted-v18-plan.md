@@ -1,3 +1,5 @@
+> **SUPERSEDED — 2026-10-24:** The user correctly challenged this sequential field-menu → combat → town playthrough order. We now use the [v1.8 script pipeline](step21-dump-translate-inject-pipeline.md) instead: dump all identifiable scripts, align translations, bulk encode, allocate/repoint, patch, and run representative QA. Treat the old per-screen timeline below only as a list of test areas, not the development schedule.
+
 # Step 20 — v1.7 accepted; vertical-slice roadmap (2026-10-24)
 
 ## Accepted hardware/emulator evidence
