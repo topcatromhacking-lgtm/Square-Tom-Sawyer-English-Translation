@@ -3,7 +3,7 @@
 
 A-Z codes 6E-87: confirmed from historic Translation 2.0 bitmaps.
 Numerals 10-19: confirmed by the original Japanese intro ("1855").
-LF=01, end=00, space=8F. Punctuation is PROVISIONAL pending
+LF=01, end=00, space=8F. Apostrophe 88 and question 8D were verified\nfrom historical Translation 2.0 bitmaps. Other punctuation is provisional pending
 FCEUX verification; no silent wrapping or lossy glyph substitution.
 """
 from __future__ import annotations
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 ALPHABET={chr(ord('A')+i):0x6E+i for i in range(26)}
 DIGITS={str(i):0x10+i for i in range(10)}
-PUNCTUATION={'?':0x88,'-':0x89,',':0x8A,'.':0x8B,'!':0x8C,"'":0x8D,':':0x23}
+PUNCTUATION={'?':0x8D,'-':0x89,',':0x8A,'.':0x8B,'!':0x8C,"'":0x88}
 SPACE,NEWLINE,TERMINATOR=0x8F,0x01,0x00
 CHAR_TO_BYTE={**ALPHABET,**DIGITS,**PUNCTUATION,' ':SPACE}
 BYTE_TO_CHAR={v:k for k,v in CHAR_TO_BYTE.items()}
