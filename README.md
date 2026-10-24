@@ -79,3 +79,13 @@ See [v1.7 technical documentation](docs/step19-overworld-menu-v17.md). Do not st
 **User confirmation:** all four overworld commands **LOOK, TAKE, DIG, ITEM** appear translated correctly in the emulator; user reports "All good." **v1.7 menu translation PASS.** This confirms the direct-CHR text representation and combined v1.6 + v1.7 patch rendering. The report does not independently establish all command submenus, action result messages, item handling, or battles; those remain untested/partially Japanese.
 
 **Next milestone v1.8:** focused vertical slice covering the actual LOOK/TAKE/DIG interaction results and ITEM submenu, with cumulative reversible original-ROM-only IPS and first-quest path checks. Then prioritize battle UI and dialogue/relocation. See `docs/step20-v17-accepted-v18-plan.md`.
+
+## Revised workflow — dump, translate and inject (2026-10-24)
+
+**User-directed correction:** development is not a sequential gameplay translation of LOOK/TAKE/DIG results, town screens, battles and NPCs one by one. Instead, follow the conventional scalable ROM-hacking workflow: **extract scripts -> align published translations -> edit/approve -> encode -> repoint/expand -> inject in bulk -> QA representative scenes -> full playthrough**.
+
+A v1.8 source-only script-pipeline prototype has been packaged for the user. It SHA-validates the exact Japanese ROM, exports **520 verified indexed records** (479 PRG bank 6; 41 PRG bank 8), matches draft translations from locally provided BlackPaladin scripts by both original pointer-field and text offset, emits a private editable TSV and diagnostics, and generates cumulative reversible IPS files from approved Bank 8 entries. With the 12 verified opening records seeded, it reproduces the **exact same v1.7 patched game image** (SHA-256 `5d869aa02c3c72cb06cefedd159e77f30d7cc18f630d7e1a4356ffaa94e7d34d`) while building a differently grouped 840-byte IPS. **20 local regression tests PASS.**
+
+Important limitations: the 520 records are **not yet every string in the game**, and PRG bank 6 injection is **disabled intentionally** until its dictionary/prefix conventions and cross-bank allocation are proven safe. More unindexed UI, battle and item tables must be discovered automatically before claiming a complete script dump. See [the v1.8 pipeline guide](docs/step21-dump-translate-inject-pipeline.md).
+
+**The next engineering work is script coverage and a safe full-bank allocator, not asking the user to play dialogue screens.** FCEUX is reserved for selected smoke tests and final QA.
