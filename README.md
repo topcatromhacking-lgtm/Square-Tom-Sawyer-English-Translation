@@ -89,3 +89,13 @@ A v1.8 source-only script-pipeline prototype has been packaged for the user. It 
 Important limitations: the 520 records are **not yet every string in the game**, and PRG bank 6 injection is **disabled intentionally** until its dictionary/prefix conventions and cross-bank allocation are proven safe. More unindexed UI, battle and item tables must be discovered automatically before claiming a complete script dump. See [the v1.8 pipeline guide](docs/step21-dump-translate-inject-pipeline.md).
 
 **The next engineering work is script coverage and a safe full-bank allocator, not asking the user to play dialogue screens.** FCEUX is reserved for selected smoke tests and final QA.
+
+## v1.9 — guarded Bank 6 bulk injection (2026-10-24)
+
+The script-first workflow now supports **in-place injection of multiple approved Bank 6 translations** as well as the 41 Bank 8 event records. The source inventory proves that **187/479 Bank 6 records have original `00 00` leading metadata**, with another **292 complex-header records** requiring further interpreter research. Version 1.9 intentionally preserves those two metadata bytes, original record allocation, all Bank 6 pointers and unapproved strings. It refuses English that overflows, contains unsupported glyphs or has a complex/unknown header. It does not automatically accept translated text from third parties.
+
+**Offline evidence:** 32 local tests passed (20 from v1.7–v1.8 plus 12 for v1.9); exact Japanese original ROM identity, bounded synthetic-record edit, cumulative v1.7 opening/menus, and original-SHA256 rollback verified. A 12-approved-opening-only TSV regenerates the exact previously FCEUX-approved v1.7 patched ROM. **No new Bank 6 dialogue has yet been visually verified in FCEUX.**
+
+Start with `python tools/script_pipeline_v19.py audit ORIGINAL.zip [TSV]`; to build with explicitly approved short translations use `python tools/script_pipeline_v19.py build ORIGINAL.zip work/script/master_PRIVATE.tsv --out work/v19`. The resulting IPS is a **standalone cumulative patch** from the original Japanese ROM. [Engineering notes](docs/step22-bank6-inplace-v19.md).
+
+**Next blocker:** a controlled allocator / MMC1-compatible expansion architecture for longer English translations and verified decoding of the 292 complex-header records. We continue with dump/translate/inject—not sequential gameplay-driven translation.
