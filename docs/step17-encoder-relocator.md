@@ -6,7 +6,7 @@
 
 The supplied historical `Square NTS Translation 2.0.ips` explicitly repaints original glyph input codes `6E–87` as uppercase A–Z. We adopt these as the *canonical English A–Z byte positions*. The clean original narration's year 1855 uses `11 18 15 15`; original digit codes are therefore `10–19`. The verified source uses space `8F`, explicit line separator `01`, and text terminator `00`.
 
-`tools/english_codec_v15.py` implements strict encoding/decoding with uppercasing, no implicit word-wrap, and clear unsupported-glyph/line-width failures. **Punctuation codes are provisional** pending actual FCEUX font visual checks: `?`=`88`, `-`=`89`, `,`=`8A`, `.`=`8B`, `!`=`8C`, apostrophe=`8D`, colon=`23`. These assignments draw on the prior altered font glyphs but are **not all independently visually verified**. They must not be presented as production-ready.
+`tools/english_codec_v15.py` implements strict encoding/decoding with uppercasing, no implicit word-wrap, and clear unsupported-glyph/line-width failures. **Historical correction (v1.6):** Translation 2.0's bitmap shapes and dialogue confirm apostrophe=`88` and question mark=`8D`; the original v1.5 values were reversed. Additional punctuation codes are `-`=`89`, `,`=`8A`, `.`=`8B`, `!`=`8C`; they use project-authored glyphs in v1.6. Colon is now deliberately unsupported rather than guessing `23`. Full FCEUX visual validation of punctuation remains pending.
 
 ## Bounded relocation
 
