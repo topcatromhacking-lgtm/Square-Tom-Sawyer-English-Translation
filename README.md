@@ -57,3 +57,11 @@ The older reverse-engineering experiments v0.1–v1.3 are preserved in the priva
 **63 source-free Python regression tests passed locally (46 prior + 17 new).** New source and tests are committed; no modified commercial game image or third-party patch data was uploaded. See [v1.5 engineering notes](docs/step17-encoder-relocator.md).
 
 **Next:** classify dictionary/prefix metadata and runtime pointer references, then build an actual contiguous English first-quest slice, followed by safe out-of-bank allocation/mapper feasibility analysis for the larger dialogue overflow.
+
+## v1.6 — English opening cutscene test (2026-10-24)
+
+The source-verified **v1.6 forward IPS now exists**. It translates twelve consecutive opening event records (the river/ticket conversation and Tom waking), and relocates ten pointers in bank 8 while retaining the original 333-byte allocation. New English text consumes 324 bytes and leaves 9 bytes free. Eleven regression tests and original-ROM forward/exact-reverse verification PASS **offline**.
+
+The important punctuation correction is apostrophe=0x88, question mark=0x8D (these were reversed in v1.5). The A–Z layout remains 0x6E..0x87. The v1.6 builder is `tools/build_opening_v16.py`; guards and tests are in `tests/test_opening_v16.py`; [technical notes](docs/step18-opening-v16.md).
+
+**FCEUX test pending:** use the standalone v1.6 IPS against the exact clean Japanese original. Verify opening and first exchanges; do not save or expect untranslated later Japanese text to display correctly. This is NOT the complete first-quest release, and the larger script expansion remains outstanding.
