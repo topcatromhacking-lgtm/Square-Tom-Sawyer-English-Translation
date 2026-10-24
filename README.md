@@ -36,6 +36,8 @@ python tools/analyze_rom.py "/private/Square no Tom Sawyer (Japan).zip" --out wo
 python tools/build_master_inventory_v14.py "/private/Square no Tom Sawyer (Japan).zip" --script "/private/tomsawyer_script_000.txt" --script "/private/tomsawyer_script_001.txt" --out work/v14
 ```
 
+**v1.4 update (2026-10-24):** The first two public BlackPaladin text files contain 481 pointer headers, of which two are `FFFF` delimiters rather than real records. The remaining **479 valid pointer references** match the four verified groups. Preliminary one-byte capacity analysis finds **478 English candidates, with 374 exceeding their current record allocations** (at least **10,070 bytes** of positive per-record overflow). See [capacity snapshot](docs/v14-capacity-snapshot.md). These are lower bounds, not final encoded sizes.
+
 ## Next milestones
 
 **v1.4:** reconcile the 479 verified ROM records with historical IPS changes and BlackPaladin's external translated script; calculate source capacity and conservative English overflow. Then implement one canonical English encoder, safe pointer relocation, and if necessary MMC1 ROM expansion. Prioritize a continuous playable first quest before full-game QA.
