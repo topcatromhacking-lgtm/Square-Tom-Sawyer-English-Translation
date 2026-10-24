@@ -65,3 +65,11 @@ The source-verified **v1.6 forward IPS now exists**. It translates twelve consec
 The important punctuation correction is apostrophe=0x88, question mark=0x8D (these were reversed in v1.5). The A–Z layout remains 0x6E..0x87. The v1.6 builder is `tools/build_opening_v16.py`; guards and tests are in `tests/test_opening_v16.py`; [technical notes](docs/step18-opening-v16.md).
 
 **FCEUX test pending:** use the standalone v1.6 IPS against the exact clean Japanese original. Verify opening and first exchanges; do not save or expect untranslated later Japanese text to display correctly. This is NOT the complete first-quest release, and the larger script expansion remains outstanding.
+
+## v1.6 FCEUX PASSED; v1.7 English overworld commands ready (2026-10-24)
+
+User screenshots confirmed the English river dialogue, multiple portraits, correct line breaks, Tom's waking scene and successful transition into outdoor/indoor gameplay. **v1.6 is visually accepted for the submitted sequences**, not every possible intro route.
+
+The command menu remained Japanese. Investigation identified **fixed-bank direct-CHR tile arrays** rather than indexed dialogue strings. `tools/build_overworld_menu_v17.py` now constructs an original-ROM-only cumulative **v1.7 standalone IPS**: v1.6 dialogue plus **LOOK, TAKE, DIG, ITEM** at ROM offsets 0x3D1AF, 0x3D1B6, 0x3D1BF, 0x3D1C8. Only 16 additional bytes differ from the v1.6 patched ROM. Local forward/rollback identity PASS, forward IPS 868 bytes; eight menu tests PASS. **v1.7 FCEUX confirmation pending.**
+
+See [v1.7 technical documentation](docs/step19-overworld-menu-v17.md). Do not stack v1.6 and v1.7 IPS files; use v1.7 by itself on the original Japanese game. Next: test all four menu labels and interactions, then extend into inventory, NPC and battle vocabulary.
