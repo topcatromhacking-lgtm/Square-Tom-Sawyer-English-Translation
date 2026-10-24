@@ -73,3 +73,9 @@ User screenshots confirmed the English river dialogue, multiple portraits, corre
 The command menu remained Japanese. Investigation identified **fixed-bank direct-CHR tile arrays** rather than indexed dialogue strings. `tools/build_overworld_menu_v17.py` now constructs an original-ROM-only cumulative **v1.7 standalone IPS**: v1.6 dialogue plus **LOOK, TAKE, DIG, ITEM** at ROM offsets 0x3D1AF, 0x3D1B6, 0x3D1BF, 0x3D1C8. Only 16 additional bytes differ from the v1.6 patched ROM. Local forward/rollback identity PASS, forward IPS 868 bytes; eight menu tests PASS. **v1.7 FCEUX confirmation pending.**
 
 See [v1.7 technical documentation](docs/step19-overworld-menu-v17.md). Do not stack v1.6 and v1.7 IPS files; use v1.7 by itself on the original Japanese game. Next: test all four menu labels and interactions, then extend into inventory, NPC and battle vocabulary.
+
+## v1.7 FCEUX validation (2026-10-24)
+
+**User confirmation:** all four overworld commands **LOOK, TAKE, DIG, ITEM** appear translated correctly in the emulator; user reports "All good." **v1.7 menu translation PASS.** This confirms the direct-CHR text representation and combined v1.6 + v1.7 patch rendering. The report does not independently establish all command submenus, action result messages, item handling, or battles; those remain untested/partially Japanese.
+
+**Next milestone v1.8:** focused vertical slice covering the actual LOOK/TAKE/DIG interaction results and ITEM submenu, with cumulative reversible original-ROM-only IPS and first-quest path checks. Then prioritize battle UI and dialogue/relocation. See `docs/step20-v17-accepted-v18-plan.md`.
