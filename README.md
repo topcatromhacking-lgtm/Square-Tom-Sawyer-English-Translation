@@ -109,3 +109,13 @@ On the real Japanese source, a disposable synthetic 7→8 and 11→5 byte test m
 This is **not** full-ROM expansion or full English text reinsertion. Combined Bank 6 capacity remains **14,325 bytes**; the extensive English drafts exceed it by approximately 9+ KiB. Non-`00 00` metadata record edits remain blocked by default and can only be attempted with an explicit experimental override. Runtime hardcoded references are still to be mapped.
 
 [Engineering notes](docs/step23-bank6-full-repack-v20.md). The source-only v20 package includes the script pipeline and unit tests; it does not contain copyrighted ROM data.
+
+### v20 dictionary-capacity investigation (2026-10-24)
+
+A second, read-only engineering result changes our next technical priority: the 478 publicly available Bank 6 English draft strings from BlackPaladin2022 are **22,996 ASCII characters**. A greedy nested **DTE/pair-dictionary** feasibility simulation suggests the entire corpus *might* fit the original 14,325-byte Bank 6 allocation **without a mapper upgrade** if an adequate decompressor can be implemented.
+
+At **160 dictionary tokens**, the optimistic modeled size is **13,319 bytes**, leaving **1,006 bytes** before linebreaks and other omitted costs; at **176 tokens**, it is **12,996 bytes** (1,329 bytes margin). At 128 tokens it barely fits (267 bytes margin). These estimates include two leading metadata bytes and a terminator for every one of 479 records; **they do not include** a game decoder, dictionary table/stack, reserved token code verification, wrapping, explicit linebreaks or other control codes. This is **NOT** a working compressed ROM or assurance it will fit.
+
+The **next milestone is reverse-engineering the original text-byte consumer and safely adding a dictionary expansion step**, evaluating reserved codes and RAM/ROM table storage before changing MMC1. If that approach fails its real constraints, return to mapper-aware expansion.
+
+[Detailed DTE feasibility audit](docs/step24-dte-feasibility-v20.md) · `tools/dte_capacity_v20.py` · `tests/test_dte_capacity_v20.py`. **55 local tests now PASS (49 preceding + 6 new dictionary-estimator tests).** The published source files are analyzed as private inputs; no third-party translated script is copied into this repository.
