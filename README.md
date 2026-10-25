@@ -131,3 +131,13 @@ A flat **single-level** phrase dictionary simulation over BlackPaladin's 478 exi
 Read-only audit and lossless simulated flat dictionary: `tools/native_dictionary_v21.py`. Regression tests: `tests/test_native_dictionary_v21.py`. **67 local tests PASS** (55 previous + 12 new); all external script text remains private.
 
 **Next engineering gate:** prove one safe token-dispatch hook and dictionary access while preserving the original `03` indirection and the known-good English opening/menus. Only then automate whole-script compression and injection.
+
+## v22 — Native reference proof and fixed-bank hook survey (2026-10-24)
+
+**Offline diagnostic milestone:** The original game supports `03 index` native phrase references. A new checksum-guarded builder, `tools/native_reference_probe_v22.py`, replaces one existing duplicate literal in `B6-420` with native `03 01`, preserving the original two-byte record prefix and 7-byte allocation. Its abstract text expansion is exactly identical to the original, **no Bank 6 pointers move**, four additional bytes change versus the accepted v1.7 ROM, and its private rollback restores the exact original image. The cumulative diagnostic IPS is generated locally and is not required for translation progress.
+
+**Important limitation:** The conservative no-nesting/no-controls scan found only **one qualified duplicate**, so the existing two-byte native reference system cannot replace a custom 160-token single-byte decoder. `tools/decoder_hook_survey_v22.py` establishes original text-reader call sites but **does not identify a safe executable cave** in the fixed bank; zero and FF runs are structured data.
+
+**81 local regression tests PASS** (67 prior + 14 v22); no FCEUX test of the new native reference has been performed. Source code and tests: `tests/test_native_reference_probe_v22.py` and `tests/test_decoder_hook_survey_v22.py`. [v22 report](docs/step26-v22-native-probe.md).
+
+**Next:** prove a safe original-ROM decoder hook location and dictionary accessibility, then implement a genuine one-byte English phrase token and build the translator around the script database. Do not ask the user to replay the game one screen at a time.
