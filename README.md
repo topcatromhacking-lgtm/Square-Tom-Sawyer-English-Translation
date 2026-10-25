@@ -141,3 +141,13 @@ Read-only audit and lossless simulated flat dictionary: `tools/native_dictionary
 **81 local regression tests PASS** (67 prior + 14 v22); no FCEUX test of the new native reference has been performed. Source code and tests: `tests/test_native_reference_probe_v22.py` and `tests/test_decoder_hook_survey_v22.py`. [v22 report](docs/step26-v22-native-probe.md).
 
 **Next:** prove a safe original-ROM decoder hook location and dictionary accessibility, then implement a genuine one-byte English phrase token and build the translator around the script database. Do not ask the user to replay the game one screen at a time.
+
+## v23 — Experimental 29 genuine single-byte tokens (2026-10-24)
+
+**New binary milestone (offline PASS; FCEUX pending):** Source-pinned `tools/native_onebyte_tokens_v23.py` rewrites the original $03,index control to one-byte **D0–EC** native phrase references without adding new executable code. Two short in-place fixed-bank 6502 edits (4 bytes at CPU `$EDE7`; 9 bytes at `$EDFD`) transform all **237** original native references across 479 indexed Bank6 records. The original Japanese bodies never use D0–EC as ordinary source glyph bytes, excluding reference operands.
+
+The builder repacks Bank6 and recalculates 479 source pointers (**445 actually change**). Text bytes fall **14,325 → 14,088**, recovering **237 real bytes** within the original bank. An independent logical expander matches **all 479 source records**, retaining metadata, FFFF separators and original source ROM dimensions. The new standalone cumulative IPS also preserves v1.7's FCEUX-accepted English opening and LOOK/TAKE/DIG/ITEM interface. Exact source-ROM rollback PASS. **95 local tests PASS** (previous 81 + 14 v23).
+
+**Not yet emulator-tested or production-ready:** possible non-indexed Bank6 source references, binary interpreter state and gameplay progression need FCEUX verification. This provides only the original **29 shared phrases**, not the 144–160 new English dictionary entries needed for full translation. The remaining Japanese dialogue is still untranslated.
+
+See [v23 code](tools/native_onebyte_tokens_v23.py), [tests](tests/test_native_onebyte_tokens_v23.py), and [technical report](docs/step27-v23-onebyte-tokens.md). Use the v23 patch **alone** on the clean original ROM; never stack IPS versions.
