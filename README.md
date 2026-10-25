@@ -177,3 +177,11 @@ Four new local read-only/mocked-emulator scenarios pass, including initial CPU z
 The user returned a real FCEUX `SquareTomSawyer_v24b_token_trace.txt`: **both physical ROM and mapped CPU match v23**, **107 Bank6 dispatches**, **2 single-byte token candidates and 2 resolver executions**, **21 secondary-reader execution events**, **zero unexpected high input bytes** over **7,032 frames**. Tokens **D1 → B6-001** (frame 6117) and **DD → B6-013** (frame 6765) both reached the patched token resolver. This establishes **actual Bank6 experimental 6502 one-byte token path execution**, resolving the earlier false-negative v24 startup fingerprint.
 
 **Scope matters:** these are 2 runtime examples among 237 converted native references. The trace itself does **not** prove visually correct Japanese text expansion for every path, nor does it implement or validate a 160-entry English dictionary. Visual fidelity and bulk English dictionary allocation remain open. Do **not** ask user to replay the startup diagnostic. [Full accepted trace and next engineering gate](docs/step30-v24b-live-token-execution.md).
+
+## v25 same-bank dictionary feasibility (2026-10-25)
+
+The user's v24b FCEUX log has **confirmed actual v23 Bank6 D1/DD token and resolver execution**. This allows us to stop running basic decoder-startup diagnostics.
+
+A newly examined storage strategy may simplify full English injection: **pack the compressed English dialogue *and* its separate phrase pointer table/data into Bank6**, instead of depending on Bank5 while Bank6 is active. The v21 optimistic 160-token data estimate becomes **12,512 bytes of text + 320-byte pointer table + 726-byte phrase bodies = 13,558**, leaving **767 bytes** inside Bank6's original 14,325-byte indexed text allocation. At 144/176 tokens, modeled margins are 554/1,021 bytes.
+
+This is a **capacity hypothesis, not a ROM decoder**. The existing v23 29-token routine still resolves its phrases through the **original first group**, not a separate dictionary pointer base; safe 160-code namespace and control/linebreak overhead remain unresolved. `tools/same_bank_dictionary_layout_v25.py` supplies bounds checks and `tests/test_same_bank_dictionary_layout_v25.py` source-only tests for the proposed allocations. [Engineering constraints and next implementation gate](docs/step31-v25-same-bank-dictionary-layout.md).
