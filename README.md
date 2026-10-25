@@ -151,3 +151,13 @@ The builder repacks Bank6 and recalculates 479 source pointers (**445 actually c
 **Not yet emulator-tested or production-ready:** possible non-indexed Bank6 source references, binary interpreter state and gameplay progression need FCEUX verification. This provides only the original **29 shared phrases**, not the 144–160 new English dictionary entries needed for full translation. The remaining Japanese dialogue is still untranslated.
 
 See [v23 code](tools/native_onebyte_tokens_v23.py), [tests](tests/test_native_onebyte_tokens_v23.py), and [technical report](docs/step27-v23-onebyte-tokens.md). Use the v23 patch **alone** on the clean original ROM; never stack IPS versions.
+
+## v24 — Read-only FCEUX Bank 6 token execution trace (2026-10-25)
+
+**User confirmation:** v23 successfully boots and still displays the English introduction. This establishes **v23 boot + Bank 8 English intro PASS**, **not** Bank 6 one-byte token execution: the 12 translated opening records are Bank 8.
+
+To avoid asking for an extended playthrough, `tools/fceux_v24_token_trace.lua` is a new **read-only observer**. It fingerprints the exact fixed-bank v23 decoder bytes, monitors `$EDE7` text dispatch, `$D0–$EC` token candidates, `$EDFD` token resolver, and `$EE2C` shared-text reader, shows counters onscreen, and writes `SquareTomSawyer_v24_token_trace.txt` where possible. It does **not** mutate game memory or savestates, load another ROM, or create a new IPS. The user may trigger just one nearby LOOK/NPC response; no line-by-line gameplay is needed.
+
+The local project passes **98 regression tests** (95 previous + 3 v24 tests). A simulated Lua/FCEUX callback test verifies the trace report; **real FCEUX token-execution evidence is still pending**. [Instructions and interpretation](docs/step28-v24-runtime-trace.md).
+
+**Next gate:** first confirmed Bank 6 token dispatch/resolver execution (and rendered text), then extension of the 29-entry single-byte dictionary and automated compressed English script injection.
