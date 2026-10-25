@@ -47,6 +47,7 @@ class SourceRom(unittest.TestCase):
         self.assertEqual(report['unique_reference_targets'],29)
         self.assertEqual(report['referencing_source_records'],172)
         self.assertEqual(report['target_indexes'],list(range(1,30)))
+        self.assertEqual(report['shared_record_dependencies']['B6-001'],27)
         self.assertEqual(report['nested_reference_targets'],[])
         self.assertEqual(report['absent_unmodified_body_byte_values'],90)
     def test_original_blank_region(self):
