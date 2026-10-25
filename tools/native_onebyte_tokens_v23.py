@@ -87,7 +87,7 @@ def build(source:bytes)->tuple[bytes,bytes,dict]:
     for raw in original:
         current,n=converted_body(raw)
         translated.append(current);counts.append(n)
-    if sum(counts)!=237 or len({i for raw in original for i in []})!=0:
+    if sum(counts)!=237:
         raise ValueError('Original native reference count drift')
     if any(counts[:29]):raise ValueError('Dictionary source unexpectedly nested')
     for idx,(before,after) in enumerate(zip(original,translated)):
