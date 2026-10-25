@@ -161,3 +161,13 @@ To avoid asking for an extended playthrough, `tools/fceux_v24_token_trace.lua` i
 The local project passes **98 regression tests** (95 previous + 3 v24 tests). A simulated Lua/FCEUX callback test verifies the trace report; **real FCEUX token-execution evidence is still pending**. [Instructions and interpretation](docs/step28-v24-runtime-trace.md).
 
 **Next gate:** first confirmed Bank 6 token dispatch/resolver execution (and rendered text), then extension of the 29-entry single-byte dictionary and automated compressed English script injection.
+
+## v24b — FCEUX tracer fingerprint correction (2026-10-25)
+
+A user-uploaded v24 trace ran **9,390 frames** but reported `Expected v23 at $EDE7, got $00`, all counters zero, and `WRONG ROM / PATCH`. This is **inconclusive**, not proof of a bad ROM: v24 checked CPU memory only once, at script startup, and then suppressed every hook after that one failed check.
+
+The original **v23 IPS bytes are independently verified**: on the SHA-256-matched Japanese game, they correctly produce the expected interpreter edits `C9 D0 90 06` at ROM offset `0x3EDF7` and `38 E9 CF 85 F1 A9 00 85 F2` at `0x3EE0D`. Whether the user's emulator loaded those edits remains unknown.
+
+**Use `tools/fceux_v24b_token_trace.lua` instead of v24.** It independently checks `rom.readbyte` (physical cartridge data) and `memory.readbyte` (currently mapped CPU memory), **repeats the check every 60 frames**, and reports original, v23, unmapped and unavailable states separately. It writes `SquareTomSawyer_v24b_token_trace.txt` and can be launched at the user's **current gameplay position**. No new IPS, restarting the game, or sequential playthrough is required.
+
+Four new local read-only/mocked-emulator scenarios pass, including initial CPU zeros with correct cartridge patch and actual unpatched ROM. **Bank 6 token runtime remains unconfirmed.** [v24b diagnosis and test](docs/step29-v24b-fingerprint-diagnostic.md).
