@@ -171,3 +171,9 @@ The original **v23 IPS bytes are independently verified**: on the SHA-256-matche
 **Use `tools/fceux_v24b_token_trace.lua` instead of v24.** It independently checks `rom.readbyte` (physical cartridge data) and `memory.readbyte` (currently mapped CPU memory), **repeats the check every 60 frames**, and reports original, v23, unmapped and unavailable states separately. It writes `SquareTomSawyer_v24b_token_trace.txt` and can be launched at the user's **current gameplay position**. No new IPS, restarting the game, or sequential playthrough is required.
 
 Four new local read-only/mocked-emulator scenarios pass, including initial CPU zeros with correct cartridge patch and actual unpatched ROM. **Bank 6 token runtime remains unconfirmed.** [v24b diagnosis and test](docs/step29-v24b-fingerprint-diagnostic.md).
+
+## v24b — Live Bank 6 one-byte token path PASS (2026-10-25)
+
+The user returned a real FCEUX `SquareTomSawyer_v24b_token_trace.txt`: **both physical ROM and mapped CPU match v23**, **107 Bank6 dispatches**, **2 single-byte token candidates and 2 resolver executions**, **21 secondary-reader execution events**, **zero unexpected high input bytes** over **7,032 frames**. Tokens **D1 → B6-001** (frame 6117) and **DD → B6-013** (frame 6765) both reached the patched token resolver. This establishes **actual Bank6 experimental 6502 one-byte token path execution**, resolving the earlier false-negative v24 startup fingerprint.
+
+**Scope matters:** these are 2 runtime examples among 237 converted native references. The trace itself does **not** prove visually correct Japanese text expansion for every path, nor does it implement or validate a 160-entry English dictionary. Visual fidelity and bulk English dictionary allocation remain open. Do **not** ask user to replay the startup diagnostic. [Full accepted trace and next engineering gate](docs/step30-v24b-live-token-execution.md).
