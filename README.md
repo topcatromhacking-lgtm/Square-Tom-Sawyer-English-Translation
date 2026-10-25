@@ -119,3 +119,15 @@ At **160 dictionary tokens**, the optimistic modeled size is **13,319 bytes**, l
 The **next milestone is reverse-engineering the original text-byte consumer and safely adding a dictionary expansion step**, evaluating reserved codes and RAM/ROM table storage before changing MMC1. If that approach fails its real constraints, return to mapper-aware expansion.
 
 [Detailed DTE feasibility audit](docs/step24-dte-feasibility-v20.md) · `tools/dte_capacity_v20.py` · `tests/test_dte_capacity_v20.py`. **55 local tests now PASS (49 preceding + 6 new dictionary-estimator tests).** The published source files are analyzed as private inputs; no third-party translated script is copied into this repository.
+
+## v21 — Native reference decoding and flat dictionary feasibility (2026-10-24)
+
+**Major ROM-engineering discovery:** The original fixed-bank text reader already handles **`03 index` embedded text references** through CPU `$EDC2–$EE4F`. The verified source contains **237 references from 172 dialogue records to 29 shared entries**. Those referenced phrases have no nested `03` references. Treat the first 29 source entries as **shared dependencies**, not independent safe-to-overwrite strings.
+
+A flat **single-level** phrase dictionary simulation over BlackPaladin's 478 existing English Bank 6 drafts is more encouraging than the former nested DTE estimate. At **160 tokens**, English symbols + the original 479 headers/terminators are estimated at **12,512 bytes** (1,813-byte margin within Bank 6's 14,325 bytes). Modeling the dictionary as NUL-terminated phrases plus 16-bit indexes gives approximately **1,046 bytes**, potentially fitting the original **1,160-byte zero-filled Bank 5 tail** (`0x17B88–0x1800F`). See [v21 detailed source audit](docs/step25-native-reference-and-flat-dictionary-v21.md).
+
+**This is not a functioning ROM compression system.** Only 90 byte values are unused in untouched original Bank 6 body data (some reserved), so a 160-token namespace cannot simply be assigned. Bank 5/6 switching, 6502 decompression code, true line/control costs and mixed-script compatibility must be resolved. No new IPS has been released or FCEUX-confirmed for v21.
+
+Read-only audit and lossless simulated flat dictionary: `tools/native_dictionary_v21.py`. Regression tests: `tests/test_native_dictionary_v21.py`. **67 local tests PASS** (55 previous + 12 new); all external script text remains private.
+
+**Next engineering gate:** prove one safe token-dispatch hook and dictionary access while preserving the original `03` indirection and the known-good English opening/menus. Only then automate whole-script compression and injection.
