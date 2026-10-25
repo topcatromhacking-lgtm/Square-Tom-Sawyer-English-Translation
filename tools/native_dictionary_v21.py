@@ -59,6 +59,7 @@ def audit_native(rom:bytes)->dict:
         'native_reference_control':'03 <one-byte index>',
         'native_reference_occurrences':sum(targets.values()),
         'unique_reference_targets':len(targets),'target_indexes':sorted(targets),
+        'shared_record_dependencies':{f'B6-{i-1:03d}':targets[i] for i in sorted(targets)},
         'referencing_source_records':len(callers),'nested_reference_targets':nested,
         'absent_unmodified_body_byte_values':sum(body_codes[b]==0 for b in range(256)),
         'token_namespace_risk':'Cannot assume 160 unused token bytes in original untranslated Bank6',
