@@ -99,3 +99,13 @@ The script-first workflow now supports **in-place injection of multiple approved
 Start with `python tools/script_pipeline_v19.py audit ORIGINAL.zip [TSV]`; to build with explicitly approved short translations use `python tools/script_pipeline_v19.py build ORIGINAL.zip work/script/master_PRIVATE.tsv --out work/v19`. The resulting IPS is a **standalone cumulative patch** from the original Japanese ROM. [Engineering notes](docs/step22-bank6-inplace-v19.md).
 
 **Next blocker:** a controlled allocator / MMC1-compatible expansion architecture for longer English translations and verified decoding of the 292 complex-header records. We continue with dump/translate/inject—not sequential gameplay-driven translation.
+
+## v20 engine — whole-bank script repacking (2026-10-24)
+
+**New verified offline capability:** `tools/script_pipeline_v20.py` rebuilds all **479 Bank 6 indexed records** into the same original 14,325-byte allocation, using approved translations from the private v1.8 TSV. A record can now **grow beyond its old individual allocation if other records shrink**. It repoints the complete indexed table, preserving the original two-byte record metadata, pointer order, `FFFF` group delimiters, end-pointer sentinel, non-indexed data, MMC1 header and ROM size.
+
+On the real Japanese source, a disposable synthetic 7→8 and 11→5 byte test moved **478 indexed pointers** and left five bytes spare. Source-verified cumulative forward/rollback passed; a no-Bank6-change build reproduced the exact previously accepted v1.7 patched ROM SHA-256. **49 local tests PASS, 17 new in v20.** No new Bank 6 dialogue has been visually tested in FCEUX.
+
+This is **not** full-ROM expansion or full English text reinsertion. Combined Bank 6 capacity remains **14,325 bytes**; the extensive English drafts exceed it by approximately 9+ KiB. Non-`00 00` metadata record edits remain blocked by default and can only be attempted with an explicit experimental override. Runtime hardcoded references are still to be mapped.
+
+[Engineering notes](docs/step23-bank6-full-repack-v20.md). The source-only v20 package includes the script pipeline and unit tests; it does not contain copyrighted ROM data.
