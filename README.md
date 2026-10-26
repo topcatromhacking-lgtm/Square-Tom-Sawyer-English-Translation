@@ -205,3 +205,19 @@ The user provided a real v26 FCEUX log: ROM file **v26**, 84 Bank 6 dispatches, 
 The new **read-only `tools/fceux_v26b_live_bank_witness.lua`** fixes this. It checks all 26 Bank 6 helper bytes **inside** the execute hook and compares the returned phrase pointer (`$F7/$F8`) with the physical dictionary table (`$BF24`) at the fixed-bank reader's `$EE1C` callback. It also records the primary dialogue pointer `$F5/$F6` to locate a nearby test line for our next English phrase pilot. No new IPS or sequential playthrough is needed.
 
 **Two local tests PASS** with the actual generated v26 ROM and simulated FCEUX callbacks: valid Bank 6 execution succeeds with pointer match despite Bank 14 visible during idle scans; foreign-Bank-14 execution is rejected. **Real FCEUX helper/pointer validation is pending.** [Details and test steps](docs/step33-v26b-live-bank-witness.md).
+
+## v26b FCEUX PASS → v27 nearby English phrase pilot (2026-10-26)
+
+**User-confirmed runtime breakthrough:** v26b FCEUX trace verified the actual **Bank 6 helper's 26 mapped bytes at `$BF0A`**, plus a matching independent dictionary pointer: at frame 5868 `DD → index14 → expected/actual $8894`, with **zero wrong-bank helper hits, zero pointer mismatches**. This completes the v26 independent-lookup *execution* gate; no further bank-mapping tracer is needed.
+
+The trace's `primary_next=$B861` maps precisely to **B6-356**, an already reachable dialogue. The first **English-phrase visual pilot v27** is built around that record, with three isolated English tokens:
+
+- `EF`: THE ANGEL WHISPERED.
+- `ED`: THERE'S NOTHING
+- `EE`: FOR YOU HERE.
+
+The reconstructed English sentence comes from the published draft for original `pointer $182E0`; the source record retains its original `02 01` line-control sequence. **All 479 original primary dialogue pointer words**, all other 478 records, and the first 29 native shared targets are preserved. **88 bytes** remain available in the old Bank6 tail. The old B6-420 HELLO diagnostic is not carried into v27.
+
+**v27 cumulative experimental IPS verified against the exact original ROM**: patched SHA-256 `cd64be1a795409474ce98642177af56e9869ef10a36b4cc5f1cdd732b3f1053a`, forward IPS SHA-256 `a3bce22df8caf23a736817f9b20bda9d9676d4f8ec0b76c1f550ef9f1c958de1`, exact rollback PASS. The source-only v26+v27 release tests pass **31 local tests**, including three-token simulated Lua callback execution against the actual newly patched ROM.
+
+**Runtime limitation:** v27 English phrase rendering is **NOT yet tested in real FCEUX**. The short handoff is to use standalone v27 on clean Japanese ROM, visit the *same* reachable LOOK/NPC line, and return the Lua report plus brief visible-text feedback. [v27 builder](tools/accessible_english_pilot_v27.py) · [v27 test](tests/test_accessible_english_pilot_v27.py) · [full technical report](docs/step34-v26b-accepted-v27-English-pilot.md).
