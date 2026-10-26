@@ -197,3 +197,11 @@ The layout occupies **96 bytes** of the **237 bytes** reclaimed by v23, leaving 
 [Engineering details and short test](docs/step32-v26-independent-bank6-dictionary.md) · [builder](tools/independent_dictionary_v26.py) · [tests](tests/test_independent_dictionary_v26.py).
 
 **Next:** after v26's relocated helper works in FCEUX, adapt this architecture for a larger English dictionary and the source-locked 520-record TSV. Current 30 entries do not yet amount to a complete English script.
+
+## v26b — Dynamic-bank decoder validation (2026-10-25)
+
+The user provided a real v26 FCEUX log: ROM file **v26**, 84 Bank 6 dispatches, one DD token, one BF0A execute-hook callback, and 12 secondary reader events. But the periodic CPU check read **$BF0A=$09**, which matches **mapped PRG Bank 14** in this same ROM, while the new Bank 6 helper begins with **$8C**. The earlier v26 tracer did not verify the bank when its BF0A hook fired, so it was **too early** to claim the new independent dictionary actually resolved the correct phrase.
+
+The new **read-only `tools/fceux_v26b_live_bank_witness.lua`** fixes this. It checks all 26 Bank 6 helper bytes **inside** the execute hook and compares the returned phrase pointer (`$F7/$F8`) with the physical dictionary table (`$BF24`) at the fixed-bank reader's `$EE1C` callback. It also records the primary dialogue pointer `$F5/$F6` to locate a nearby test line for our next English phrase pilot. No new IPS or sequential playthrough is needed.
+
+**Two local tests PASS** with the actual generated v26 ROM and simulated FCEUX callbacks: valid Bank 6 execution succeeds with pointer match despite Bank 14 visible during idle scans; foreign-Bank-14 execution is rejected. **Real FCEUX helper/pointer validation is pending.** [Details and test steps](docs/step33-v26b-live-bank-witness.md).
