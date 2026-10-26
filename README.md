@@ -185,3 +185,15 @@ The user's v24b FCEUX log has **confirmed actual v23 Bank6 D1/DD token and resol
 A newly examined storage strategy may simplify full English injection: **pack the compressed English dialogue *and* its separate phrase pointer table/data into Bank6**, instead of depending on Bank5 while Bank6 is active. The v21 optimistic 160-token data estimate becomes **12,512 bytes of text + 320-byte pointer table + 726-byte phrase bodies = 13,558**, leaving **767 bytes** inside Bank6's original 14,325-byte indexed text allocation. At 144/176 tokens, modeled margins are 554/1,021 bytes.
 
 This is a **capacity hypothesis, not a ROM decoder**. The existing v23 29-token routine still resolves its phrases through the **original first group**, not a separate dictionary pointer base; safe 160-code namespace and control/linebreak overhead remain unresolved. `tools/same_bank_dictionary_layout_v25.py` supplies bounds checks and `tests/test_same_bank_dictionary_layout_v25.py` source-only tests for the proposed allocations. [Engineering constraints and next implementation gate](docs/step31-v25-same-bank-dictionary-layout.md).
+
+## v26 — 30-token independent Bank 6 dictionary pilot (2026-10-25)
+
+**An actual source-verified cumulative experimental IPS has been built.** A dedicated **30-entry phrase pointer table** is stored in reclaimed Bank 6 space at CPU `$BF24`, and a new cloned 6502 index helper at `$BF0A` is reached by rewriting only the resolver's `JSR $ED9D` call at `$EE0A`. The **original 479 dialogue pointers and original 29 shared phrases are all preserved**; the new 30th token `$ED` references an isolated English `HELLO` phrase at `$BF62`. For this diagnostic only, record B6-420 is changed to show that phrase rather than its authentic story text.
+
+The layout occupies **96 bytes** of the **237 bytes** reclaimed by v23, leaving 141 bytes unused. **112 tests PASS** locally, including instruction-level execution of the 25-byte helper for 30 indexes, source-ROM data and pointer validation, an actual cumulative IPS + exact rollback, a simulated FCEUX tracer, and reproducing the same IPS SHA-256 after unpacking a fresh release ZIP.
+
+**Important distinction:** user's v24b trace confirmed v23 native Bank 6 token execution, but the **new v26 independent helper has not yet executed under user FCEUX**. The standalone v26 IPS includes the v1.7 English intro/menu and v23 decoder; it must be applied alone to the clean Japanese ROM. Use the read-only `tools/fceux_v26_independent_dictionary_trace.lua` to count `$BF0A` helper calls from just one nearby LOOK/NPC interaction. An `$ED` hit is not required to verify that the original 29 token references now use the independent table.
+
+[Engineering details and short test](docs/step32-v26-independent-bank6-dictionary.md) · [builder](tools/independent_dictionary_v26.py) · [tests](tests/test_independent_dictionary_v26.py).
+
+**Next:** after v26's relocated helper works in FCEUX, adapt this architecture for a larger English dictionary and the source-locked 520-record TSV. Current 30 entries do not yet amount to a complete English script.
