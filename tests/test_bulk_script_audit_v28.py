@@ -83,6 +83,27 @@ class V28AuditTests(unittest.TestCase):
         self.assertIn("[WAIT]", table[5]["unresolved_markup"])
         self.assertIn("[WAIT]", table[5]["english"])
 
+    def test_tl_parser_moves_prose_before_ed_into_v18_format(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "tomsawyer_script_000TL.txt"
+            source.write_text(
+                "//POINTER #0 @ $18014 - STRING #0 @ $18812\n"
+                "#W16($18014)\n[null]Becky[ED]\n\n"
+                "//POINTER #1 @ $18016 - STRING #1 @ $18819\n"
+                "#W16($18016)\nTom: Look here![LN]\nSomething happened.[ED]\n",
+                encoding="utf-8",
+            )
+            normalized = v28.normalize_tl_draft(source, root / "private")
+            references = v28.v18.references(normalized)
+            self.assertEqual(len(references), 2)
+            self.assertEqual(references[0]["english"], "Becky")
+            self.assertEqual(references[1]["english"],
+                             "Tom: Look here![LN] Something happened.")
+            self.assertEqual((references[1]["ptr"], references[1]["text"]),
+                             (0x18016, 0x18819))
+
 
 if __name__ == "__main__":
     unittest.main()

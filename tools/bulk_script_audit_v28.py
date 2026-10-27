@@ -52,6 +52,46 @@ def download_drafts(directory: Path) -> list[Path]:
     return paths
 
 
+def normalize_tl_draft(path: Path, private_dir: Path) -> Path:
+    """Adapt upstream TL text-before-[ED] into the older v18 parser format.
+
+    v18.references() expects English prose AFTER [ED] as in annotated source
+    dumps. Upstream *TL.txt files instead store translated text BEFORE [ED].
+    Do not silently feed those files into v18 or all drafts look empty.
+    """
+    contents = path.read_text(encoding="utf-8-sig")
+    matches = list(v18.SCRIPT_PTR_RE.finditer(contents))
+    if not matches:
+        raise ValueError(f"No pointer records in TL script: {path.name}")
+    lines = []
+    for index, match in enumerate(matches):
+        segment = contents[match.end():matches[index + 1].start()
+                           if index + 1 < len(matches) else len(contents)]
+        body = re.search(r"#W16\(\$[0-9A-Fa-f]+\)\s*(.*?)\[ED\]",
+                         segment, flags=re.I | re.S)
+        if not body:
+            raise ValueError(f"Missing TL text/terminator at {path.name} #{index}")
+        # [null] in the published TL is a formatting marker, not a glyph.
+        # The original record's two metadata bytes remain in the TSV.
+        english = re.sub(r"\[null\]", "", body.group(1), flags=re.I)
+        english = " ".join(english.splitlines()).strip()
+        lines.append(match.group(0) + "\n[ED]\n" + english + "\n\n")
+    private_dir.mkdir(parents=True, exist_ok=True)
+    result = private_dir / (path.stem + "_normalized_PRIVATE.txt")
+    result.write_text("".join(lines), encoding="utf-8")
+    if len(v18.references(result)) != len(matches):
+        raise AssertionError("TL normalization dropped pointer records")
+    return result
+
+
+def normalized_sources(paths: list[Path], private_dir: Path) -> list[Path]:
+    return [
+        normalize_tl_draft(path, private_dir)
+        if path.name.lower().endswith("tl.txt") else path
+        for path in paths
+    ]
+
+
 def wrapped_lines(text: str, width: int = WIDTH) -> tuple[list[str], list[str]]:
     """Make a conservative non-destructive PREVIEW, not runnable control bytes.
 
@@ -208,7 +248,8 @@ def build_audit(original: bytes, script_paths: list[Path], output: Path,
                 width: int = WIDTH, height: int = LINES_PER_PAGE):
     output.mkdir(parents=True, exist_ok=True)
     master = output / "sts_v28_translation_master_PRIVATE.tsv"
-    dump_report = v18.dump(original, master, script_paths, True, None)
+    normalized = normalized_sources(script_paths, output / "draft_sources_PRIVATE")
+    dump_report = v18.dump(original, master, normalized, True, None)
     rows = v18.load_edited(original, master)  # re-check all source identities
     table, counts, lengths = review(rows, width, height)
     review_file = output / "sts_v28_dialogue_review_PRIVATE.tsv"

@@ -2,7 +2,7 @@
 
 **2026-10-27 — source-only engineering checkpoint; no ROM patch produced.**
 
-The repository previously documented the v28 bulk script audit but did not include its program in \`tools/\`. This commit introduces \`tools/bulk_script_audit_v28.py\` and synthetic source-free tests. It imports BlackPaladin's existing public \`000TL\` and \`001TL\` translation drafts only when explicitly requested, via the same source-locked \`script_pipeline_v18\` inventory/matcher. The full 520-record editable TSV remains private; no third-party translated script, Japanese ROM, save, or binary patch is committed.
+The repository previously documented the v28 bulk script audit but did not include its program in \`tools/\`. This commit introduces \`tools/bulk_script_audit_v28.py\` and synthetic source-free tests. It normalizes BlackPaladin's TL-before-[ED] format into the legacy v18 parser's after-[ED] representation, then imports the existing public \`000TL\` and \`001TL\` translation drafts only when explicitly requested, via the same source-locked \`script_pipeline_v18\` inventory/matcher. The full 520-record editable TSV remains private; no third-party translated script, Japanese ROM, save, or binary patch is committed.
 
 ### Run on Windows
 
