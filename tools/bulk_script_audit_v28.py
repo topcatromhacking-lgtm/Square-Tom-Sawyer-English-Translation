@@ -69,11 +69,19 @@ def normalize_tl_draft(path: Path, private_dir: Path) -> Path:
                            if index + 1 < len(matches) else len(contents)]
         body = re.search(r"#W16\(\$[0-9A-Fa-f]+\)\s*(.*?)\[ED\]",
                          segment, flags=re.I | re.S)
-        if not body:
-            raise ValueError(f"Missing TL text/terminator at {path.name} #{index}")
-        # [null] in the published TL is a formatting marker, not a glyph.
-        # The original record's two metadata bytes remain in the TSV.
-        english = re.sub(r"\[null\]", "", body.group(1), flags=re.I)
+        if body:
+            phrase = body.group(1)
+        else:
+            # Upstream 000TL record #152 ends in [BR] without an [ED].
+            # Preserve it as an incomplete, explicitly flagged draft.
+            unfinished = re.search(r"#W16\(\$[0-9A-Fa-f]+\)\s*(.*)",
+                                   segment, flags=re.I | re.S)
+            if not unfinished:
+                raise ValueError(f"Missing TL text at {path.name} #{index}")
+            phrase = unfinished.group(1) + " [NO_ED]"
+        # [null] is upstream formatting, not a printable English glyph.
+        # The original two metadata bytes still come from the SHA-pinned ROM.
+        english = re.sub(r"\[null\]", "", phrase, flags=re.I)
         english = " ".join(english.splitlines()).strip()
         lines.append(match.group(0) + "\n[ED]\n" + english + "\n\n")
     private_dir.mkdir(parents=True, exist_ok=True)

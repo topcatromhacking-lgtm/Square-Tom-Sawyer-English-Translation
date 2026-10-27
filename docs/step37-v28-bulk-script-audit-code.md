@@ -21,3 +21,7 @@ The abstract allocator guarantees record boundaries in its projected slots, but 
 ### Next engineering gate
 
 Trace actual runtime control handling for byte \`01\` and \`02\` with a read-only emulator witness, then reproduce one real page continuation without changing gameplay semantics. Separately identify a safe bank mapper/trampoline or in-ROM bank reclamation strategy before converting virtual placements into physical addresses. No sequential NPC-by-NPC translation QA is required.
+
+### Public TL continuation anomaly
+
+The actual upstream TL files contain **479 unique pointer/text records** (409 in \`000TL\`, 70 in \`001TL\`), but record **#152 at pointer \`$18144\`, text \`$1983D\`** ends with \`[BR]\` and lacks \`[ED]\`. The normalization keeps this entry, adds \`[NO_ED]\` as an explicit review flag, and never invents a runtime end or page command. This explains why simpler terminator-delimited parsing loses a translation candidate. The other 478 records contain \`[ED]\`. Neither \`[BR]\` nor \`[NO_ED]\` is encoded into the ROM by this audit.

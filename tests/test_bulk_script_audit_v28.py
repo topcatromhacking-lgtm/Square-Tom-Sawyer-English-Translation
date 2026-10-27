@@ -104,6 +104,23 @@ class V28AuditTests(unittest.TestCase):
             self.assertEqual((references[1]["ptr"], references[1]["text"]),
                              (0x18016, 0x18819))
 
+    def test_incomplete_upstream_record_is_retained_and_flagged(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "tomsawyer_script_000TL.txt"
+            source.write_text(
+                "//POINTER #152 @ $18144 - STRING #152 @ $1983D\n"
+                "#W16($18144)\nBill: Have you met[LN]Huck?[BR]\n",
+                encoding="utf-8",
+            )
+            normalized = v28.normalize_tl_draft(source, root / "private")
+            refs = v28.v18.references(normalized)
+            self.assertEqual(len(refs), 1)
+            self.assertIn("Have you met", refs[0]["english"])
+            self.assertIn("[BR]", refs[0]["english"])
+            self.assertIn("[NO_ED]", refs[0]["english"])
+
 
 if __name__ == "__main__":
     unittest.main()
